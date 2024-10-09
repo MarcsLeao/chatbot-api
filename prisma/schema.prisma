@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model evaluation {
+  id                Int     @id(map: "PK__evaluation__3213E83FBA34A6E7") @default(autoincrement())
+  id_users          Int     @unique
+  dental_procedure  String? @db.VarChar(255)
+  medical_history   String? @db.VarChar(255)
+  allergy           String? @db.VarChar(255)
+  medical_condition String? @db.VarChar(255)
+  ongoing_treatment String? @db.VarChar(255)
+  users             users   @relation(fields: [id_users], references: [id], onUpdate: NoAction, map: "fk_avaliacao_users")
+}
+
+model login {
+  id                          Int       @id(map: "PK__login__3213E83F964947F5") @default(autoincrement())
+  id_users                    Int       @unique
+  email                       String    @unique(map: "UQ__login__AB6E616461664408") @db.VarChar(255)
+  password                    String    @db.VarChar(60)
+  tokenResetPassword          String?   @db.VarChar(32)
+  tokenResetPasswordExpiresAt DateTime?
+  users                       users     @relation(fields: [id_users], references: [id], onUpdate: NoAction, map: "fk_login_users")
+}
+
+model users {
+  id         Int         @id(map: "PK__users__3213E83F13FE752D") @default(autoincrement())
+  uuid       String      @unique(map: "UQ__users__7F4279312D9FD93E") @db.UniqueIdentifier
+  name       String      @db.VarChar(255)
+  gender     String      @db.Char(1)
+  birth_date DateTime    @db.Date
+  phone      String      @unique(map: "UQ__users__B43B145F320A092D") @db.VarChar(11)
+  created_at DateTime    @default(now(), map: "DF__users__created_a__15702A09") @db.DateTime
+  avaliacao  evaluation[]
+  login      login[]
+}
